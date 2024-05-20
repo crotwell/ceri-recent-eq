@@ -1,0 +1,103 @@
+import * as sp from 'seisplotjs';
+import { DateTime, Duration, Interval } from "luxon";
+
+export function loadQuakes() {
+  const ceri_recenteq_url =
+    'http://folkworm.ceri.memphis.edu/REQ/json/recent_events.json?map_type=recent';
+  const test_recenteq_url = 'data/recent_events.json';
+
+  const fetchInit = sp.util.defaultFetchInitObj(sp.util.JSON_MIME);
+  return sp.util.doFetchWithTimeout(test_recenteq_url, fetchInit, 10).then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
+  }).then(json => {
+    return parseCeriJson(json);
+  });
+}
+
+export function parseCeriJson(jsonArr) {
+  const out: Array<sp.quakeml.Quake> = [];
+  for (let jObj of jsonArr) {
+    const e = jObj.event;
+    const otime = DateTime.fromSeconds(e.event_time_epoch, {zone: "utc"});
+    const or = new sp.quakeml.Origin(otime, e.lat, e.lon);
+    const evid = e.evid != null ? e.evid : `recent_${e.epoch}`;
+    const q = sp.quakeml.createQuakeFromValues(evid,
+      otime,
+      e.lat, e.lng,
+      e.depth_km*1000
+    );
+    if (q == null) {
+      throw new Error(`q is null`);
+    }
+    q.preferredMagnitude = new sp.quakeml.Magnitude(e.magnitude, "Ml");
+
+    out.push(q);
+  }
+  console.log(`par`)
+  return out;
+}
+
+export function createQuakeLoadRadios(displayFun) {
+  document.querySelector<HTMLDivElement>('#timerange')!.innerHTML = `
+  <label>Time: </label>
+  <input type="radio" id="isday" name="timerange" value="day" />
+  <label for="day">
+      <span>24 Hours: </span>
+  </label>
+  <input type="radio" id="isweek" name="timerange" value="week"  checked/>
+  <label for="week">
+      <span>Last Week: </span>
+  </label>
+  <input type="radio" id="ismonth" name="timerange" value="month" />
+  <label for="month">
+      <span>Last Month: </span>
+  </label>
+  <input type="radio" id="issixmonth" name="timerange" value="sixmonth" />
+  <label for="sixmonth">
+      <span>Six Months: </span>
+  </label>
+  `;
+
+  const timeRangeList = document.querySelectorAll('input[name="timerange"]');
+  timeRangeList.forEach(el => {
+    el.addEventListener("change", (event) => loadForRange().then(displayFun));
+  });
+  loadForRange().then(displayFun);
+}
+
+const quakeDisplaySelector = ".quakedisplay";
+
+export function loadForRange() {
+  const timeRangeEl = document.querySelector('input[name="timerange"]:checked');
+  let timeRangeStr = timeRangeEl ? timeRangeEl.value : "day";
+  let timeRangeDur;
+  if (timeRangeStr === "day") {
+    timeRangeDur = Duration.fromObject({hours: 24});
+  } else if (timeRangeStr === "week") {
+    timeRangeDur = Duration.fromObject({days: 7});
+  } else if (timeRangeStr === "month") {
+    timeRangeDur = Duration.fromObject({days: 31});
+  } else if (timeRangeStr === "sixmonth") {
+    timeRangeDur = Duration.fromObject({days: 185});
+  } else {
+    timeRangeDur = Duration.fromObject({years: 1});
+  }
+
+  return loadQuakes().then(quakeList => {
+    console.log(`added ${quakeList.length} quakes`);
+    const now = DateTime.utc();
+    const tableTimeRange = now.minus(timeRangeDur);
+    const tableQuakes = [];
+    for (let q of quakeList.reverse()) {
+      let css = "older";
+      if (q.preferredOrigin.time > tableTimeRange) {
+        tableQuakes.push(q);
+      }
+    }
+    return tableQuakes
+  });
+}
