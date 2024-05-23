@@ -122,5 +122,5 @@ loadQuakeById(qid).then(quake => {
 
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);
-  window.open(`station?sid=${e.detail.station.sourceId}`, "_blank");
+  window.open(`seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`, "seismogram");
 });
