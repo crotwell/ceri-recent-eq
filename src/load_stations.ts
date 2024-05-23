@@ -28,6 +28,9 @@ export function loadStationBySID(sid: string) {
   console.log(`${fdsnsid.networkCode}  ${fdsnsid.stationCode}`)
   let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode(fdsnsid.networkCode)
-  .stationCode(fdsnsid.stationCode);
+  .stationCode(fdsnsid.stationCode)
+  .locationCode("00,--")
+  .channelCode("BH?,HH?,SH?")
+  .endAfter("2024-05-01");
   return stationQuery.queryChannels();
 }
