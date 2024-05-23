@@ -1,9 +1,8 @@
 import './style.css'
-import { loadStations, loadStationBySID } from './load_stations.ts'
-import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import { loadStations } from './load_stations.ts'
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-import AutoGraticule from "leaflet-auto-graticule";
+
 
 const headEl = document.querySelector<HTMLHeaderElement>('header');
 headEl!.innerHTML = `
@@ -20,31 +19,26 @@ headEl!.innerHTML = `
   </nav>
 `;
 
-const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
-const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
-
-const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
-
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<p>On station page: </p>
-  <div id="timerange">
-  </div>
+
   <div>
     <sp-station-quake-map
       centerLat="36" centerLon="-90" zoomLevel="6"
       magScale="3"
-      tileUrl='${uscTileCache}'
-      tileAttrib='${tileAttrib}'
+      tileUrl='https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
       fitBounds="false"
       >
     </sp-station-quake-map>
-    <sp-channel-table>
-    </sp-channel-table>
     <h5 class="read-the-docs">
       Created with <a href="http://crotwell.github.io/seisplotjs/">Seisplotjs</a>
     </h5>
   </div>
 `
+
+const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
+const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
+
+const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
@@ -95,32 +89,14 @@ eqMap.addStyle(`
   }
 `);
 
-
-const chanTable = document.querySelector("sp-channel-table");
-
-const url = new URL(document.URL);
-const queryParams = url.searchParams;
-const sid = queryParams.get("sid");
-let station = null;
-document.querySelector("p").textContent = sid;
-loadStationBySID(sid).then(netList => {
-  station = netList[0].stations[0];
-  eqMap.addStation(station, station.networkCode);
-  eqMap.centerLat = station.latitude;
-  eqMap.centerLon = station.longitude;
-  chanTable.channelList = station.channels;
+loadStations().then(netList => {
+  for (let net of netList ) {
+    eqMap.addStation(net.stations, net.networkCode);
+  }
   eqMap.draw();
-  return station;
-}).then(station => {
-  return station;
 });
 
-createQuakeLoadRadios(quakeList => {
-  addQuakesToMap(quakeList, eqMap);
-});
-
-
-eqMap.addEventListener("quakeclick", e => {
-  console.log(e.detail.quake.publicId);
-  window.open(`seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`, "seismogram");
+eqMap.addEventListener("stationclick", e => {
+  console.log(e.detail.station.sourceId);
+  window.open(`station?sid=${e.detail.station.sourceId}`, "station");
 });

@@ -13,7 +13,7 @@ headEl!.innerHTML = `
   <nav>
     <ul>
       <li><a href="index.html">Recent Earthquakes</a></li>
-      <li><a href="station.html">Station Map</a></li>
+      <li><a href="station_list.html">Station Map</a></li>
       <li><a href="req_sta.html">Recent Earthquakes and Stations</a></li>
       <li><a href="event_list.html">List of all events</a></li>
     </ul>

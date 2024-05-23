@@ -1,8 +1,8 @@
 import './style.css'
-import { loadQuakes, createQuakeLoadRadios } from './load_quakes.ts'
+import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-
+import AutoGraticule from "leaflet-auto-graticule";
 
 const headEl = document.querySelector<HTMLHeaderElement>('header');
 headEl!.innerHTML = `
@@ -11,8 +11,8 @@ headEl!.innerHTML = `
   </a>
   <nav>
     <ul>
-      <li><a href="recent.html">Recent Earthquakes</a></li>
-      <li><a href="station.html">Station Map</a></li>
+      <li><a href="index.html">Recent Earthquakes</a></li>
+      <li><a href="station_list.html">Station Map</a></li>
       <li><a href="req_sta.html">Recent Earthquakes and Stations</a></li>
       <li><a href="event_list.html">List of all events</a></li>
     </ul>
@@ -68,22 +68,12 @@ eqMap.addStyle(`
   }
 `);
 
-
 createQuakeLoadRadios(quakeList => {
-  console.log(`added ${quakeList.length} quakes`);
-  //quakeList = quakeList.slice(10,15);
-  const now = DateTime.utc();
-  const yesterday = now.minus(Duration.fromObject({hours: 24}));
-  const weekago = now.minus(Duration.fromObject({days: 7}));
-  eqMap.quakeList.length=0;
-  for (let q of quakeList.reverse()) {
-    let css = "older";
-    if (q.preferredOrigin.time > yesterday) {
-      css = "day";
-    } else if (q.preferredOrigin.time > weekago) {
-      css = "week";
-    }
-    eqMap.addQuake(q, css);
-  }
-  eqMap.draw();
+  addQuakesToMap(quakeList, eqMap);
+  new AutoGraticule().addTo(eqMap.map);
+});
+
+eqMap.addEventListener("quakeclick", e => {
+  console.log(e.detail.quake.publicId);
+  window.open(`earthquake?quakeid=${e.detail.quake.publicId}`, "earthquake");
 });

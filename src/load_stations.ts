@@ -19,3 +19,15 @@ export function loadStations() {
     return sp.stationxml.parseStationXml(xml);
   });
 }
+
+export function loadStationBySID(sid: string) {
+  if (!sid.startsWith(sp.fdsnsourceid.FDSN_PREFIX)) {
+    sid = sp.fdsnsourceid.FDSN_PREFIX+sid;
+  }
+  let fdsnsid = sp.fdsnsourceid.StationSourceId.parse(sid);
+  console.log(`${fdsnsid.networkCode}  ${fdsnsid.stationCode}`)
+  let stationQuery = new sp.fdsnstation.StationQuery()
+  .networkCode(fdsnsid.networkCode)
+  .stationCode(fdsnsid.stationCode);
+  return stationQuery.queryChannels();
+}

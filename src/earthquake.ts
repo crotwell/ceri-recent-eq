@@ -1,9 +1,10 @@
 import './style.css'
 import { loadStations, loadStationBySID } from './load_stations.ts'
-import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import { loadQuakeById, loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
+
 
 const headEl = document.querySelector<HTMLHeaderElement>('header');
 headEl!.innerHTML = `
@@ -32,14 +33,14 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
     <sp-station-quake-map
       centerLat="36" centerLon="-90" zoomLevel="6"
-      magScale="3"
+      magScale="20"
       tileUrl='${uscTileCache}'
       tileAttrib='${tileAttrib}'
       fitBounds="false"
       >
     </sp-station-quake-map>
-    <sp-channel-table>
-    </sp-channel-table>
+    <sp-quake-table>
+    </sp-quake-table>
     <h5 class="read-the-docs">
       Created with <a href="http://crotwell.github.io/seisplotjs/">Seisplotjs</a>
     </h5>
@@ -96,31 +97,30 @@ eqMap.addStyle(`
 `);
 
 
-const chanTable = document.querySelector("sp-channel-table");
+const quakeTable = document.querySelector("sp-quake-table");
 
 const url = new URL(document.URL);
 const queryParams = url.searchParams;
-const sid = queryParams.get("sid");
-let station = null;
-document.querySelector("p").textContent = sid;
-loadStationBySID(sid).then(netList => {
-  station = netList[0].stations[0];
-  eqMap.addStation(station, station.networkCode);
-  eqMap.centerLat = station.latitude;
-  eqMap.centerLon = station.longitude;
-  chanTable.channelList = station.channels;
+const qid = queryParams.get("quakeid");
+document.querySelector("p").textContent = qid;
+loadQuakeById(qid).then(quake => {
+  eqMap.centerLat = quake.origin.latitude;
+  eqMap.centerLon = quake.origin.longitude;
+  quakeTable.quakeList = [quake];
+  eqMap.addQuake(quake, "day");
   eqMap.draw();
-  return station;
-}).then(station => {
-  return station;
+  return quake;
+}).then(quake => {
+  return loadStations().then(netList => {
+    for (let net of netList ) {
+      eqMap.addStation(net.stations, net.networkCode);
+    }
+    new AutoGraticule().addTo(eqMap.map);
+    eqMap.draw();
+  });
 });
 
-createQuakeLoadRadios(quakeList => {
-  addQuakesToMap(quakeList, eqMap);
-});
-
-
-eqMap.addEventListener("quakeclick", e => {
-  console.log(e.detail.quake.publicId);
-  window.open(`seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`, "seismogram");
+eqMap.addEventListener("stationclick", e => {
+  console.log(e.detail.station.sourceId);
+  window.open(`station?sid=${e.detail.station.sourceId}`, "_blank");
 });

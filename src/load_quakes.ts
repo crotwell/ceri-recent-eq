@@ -101,3 +101,31 @@ export function loadForRange() {
     return tableQuakes
   });
 }
+
+export function loadQuakeById(qid: String): sp.quakeml.Quake {
+  return loadQuakes().then(quakeList => {
+    return quakeList.find(q => q.publicId === qid);
+  })
+}
+
+
+export function addQuakesToMap(quakeList: Array<sp.quakeml.Quake>,
+                                eqMap: sp.leafletutil.QuakeStationMap) {
+
+  console.log(`added ${quakeList.length} quakes`);
+  //quakeList = quakeList.slice(10,15);
+  const now = DateTime.utc();
+  const yesterday = now.minus(Duration.fromObject({hours: 24}));
+  const weekago = now.minus(Duration.fromObject({days: 7}));
+  eqMap.quakeList.length=0;
+  for (let q of quakeList.reverse()) {
+    let css = "older";
+    if (q.preferredOrigin.time > yesterday) {
+      css = "day";
+    } else if (q.preferredOrigin.time > weekago) {
+      css = "week";
+    }
+    eqMap.addQuake(q, css);
+  }
+  eqMap.draw();
+}
