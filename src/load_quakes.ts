@@ -1,6 +1,21 @@
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 
+export function loadCeriBoundary() {
+  const ceriBound_url = 'ceri_boundaries_req3.geojson';
+
+  const fetchInit = sp.util.defaultFetchInitObj(sp.util.JSON_MIME);
+  return sp.util.doFetchWithTimeout(test_recenteq_url, fetchInit, 10).then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
+  }).then(geojson => {
+    return geojson;
+  });
+}
+
 export function loadQuakes() {
   const ceri_recenteq_url =
     'http://folkworm.ceri.memphis.edu/REQ/json/recent_events.json?map_type=recent';
