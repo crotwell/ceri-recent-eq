@@ -103,4 +103,8 @@ eqMap.addEventListener("quakeclick", e => {
   window.open(`earthquake?quakeid=${e.detail.quake.publicId}`, "earthquake");
 });
 
+eqTable.addEventListener("quakeclick", e => {
+  console.log(e.detail.quake.publicId);
+  window.open(`earthquake?quakeid=${e.detail.quake.publicId}`, "earthquake");
+});
 eqMap.redraw();
