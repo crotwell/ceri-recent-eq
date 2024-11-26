@@ -1,24 +1,12 @@
 
 import './style.css'
 import { loadQuakes, createQuakeLoadRadios } from './load_quakes.ts'
+import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 
 
-const headEl = document.querySelector<HTMLElement>('header');
-headEl!.innerHTML = `
-  <a href="http://www.memphis.edu/ceri">
-    <img src="UofM_logo_preferred.png" alt"CERI" height="180">
-  </a>
-  <nav>
-    <ul>
-      <li><a href="index.html">Recent Earthquakes</a></li>
-      <li><a href="station_list.html">Station Map</a></li>
-      <li><a href="req_sta.html">Recent Earthquakes and Stations</a></li>
-      <li><a href="event_list.html">List of all events</a></li>
-    </ul>
-  </nav>
-`;
+const headEl = createHeader();
 
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -32,6 +20,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
     <h5 class="read-the-docs">
       Created with <a href="http://crotwell.github.io/seisplotjs/">Seisplotjs</a>
+      <span class="sp_version"></span>
     </h5>
   </div>
 `;
@@ -41,3 +30,4 @@ createQuakeLoadRadios(quakeList => {
   eqTable.quakeList = quakeList;
   eqTable.draw();
 });
+setSPVersion();

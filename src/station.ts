@@ -3,24 +3,12 @@ import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import { createStandardLegend, legendCSS} from './legend';
 import { loadStations, loadStationBySID } from './load_stations.ts'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
 
-const headEl = document.querySelector<HTMLElement>('header');
-headEl!.innerHTML = `
-  <a href="http://www.memphis.edu/ceri">
-    <img src="UofM_logo_preferred.png" alt"CERI" height="180">
-  </a>
-  <nav>
-    <ul>
-      <li><a href="index.html">Recent Earthquakes</a></li>
-      <li><a href="station_list.html">Station Map</a></li>
-      <li><a href="req_sta.html">Recent Earthquakes and Stations</a></li>
-      <li><a href="event_list.html">List of all events</a></li>
-    </ul>
-  </nav>
-`;
+const headEl = createHeader();
 
 const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
 const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
@@ -42,8 +30,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </sp-station-quake-map>
     <sp-channel-table>
     </sp-channel-table>
+    <div id="realtime"></div>
     <h5 class="read-the-docs">
       Created with <a href="http://crotwell.github.io/seisplotjs/">Seisplotjs</a>
+      <span class="sp_version"></span>
     </h5>
   </div>
 `
@@ -88,3 +78,4 @@ eqMap.addEventListener("quakeclick", e => {
   window.open(`seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`);
 });
 eqMap.redraw();
+setSPVersion();
