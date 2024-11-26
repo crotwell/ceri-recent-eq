@@ -57,7 +57,7 @@ const qid = queryParams.get("quakeid");
 let dataset = null;
 loadStationBySID(sid).then(netList => {
   station = netList[0].stations[0];
-  document.querySelector("#stationinfo").textContent = `${station.codes()} (${station.latitude}/${station.longitude}) ${station.description}`;
+  document.querySelector("#stationinfo").textContent = `${station.codes()} (${station.latitude}/${station.longitude}) ${station.name}`;
   const qPromise = loadQuakeById(qid);
   return Promise.all([netList, qPromise]);
 }).then(([netList, quake]) => {

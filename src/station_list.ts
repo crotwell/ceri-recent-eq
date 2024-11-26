@@ -62,6 +62,6 @@ eqMap.onRedraw = function(eqMap) {
 
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);
-  window.open(`station?sid=${e.detail.station.sourceId}`, "station");
+  window.open(`station?sid=${e.detail.station.sourceId}`);
 });
 eqMap.redraw();
