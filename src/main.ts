@@ -19,6 +19,11 @@ headEl!.innerHTML = `
     </ul>
   </nav>
 `;
+const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
+const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
+
+const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/';
+
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
@@ -29,7 +34,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       class="quakedisplay"
       centerLat="36" centerLon="-90" zoomLevel="6"
       magScale="3"
-      tileUrl='https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
+      tileUrl="${uscTileCache}",
+      tileAttribution="${tileAttrib}",
       fitBounds="false"
       >
     </sp-station-quake-map>
@@ -39,10 +45,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
-const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
 
-const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
+//const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
