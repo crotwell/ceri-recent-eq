@@ -16,7 +16,10 @@ const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geolo
 const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<p>On station page: </p>
+  <div>
+    <span class="toptext">On station page: </span>
+    <a id="realtime">realtime</a>
+  <div>
   <div id="timerange">
   </div>
   <div>
@@ -50,8 +53,10 @@ const url = new URL(document.URL);
 const queryParams = url.searchParams;
 const sid = queryParams.get("sid");
 let station = null;
-document.querySelector("p").textContent = sid;
+document.querySelector("span.toptext").textContent = sid;
 loadStationBySID(sid).then(netList => {
+  document.querySelector("#realtime").setAttribute("href",  `station_realtime.html?sid=${sid}`);
+
   station = netList[0].stations[0];
   eqMap.addStation(station, station.networkCode);
   eqMap.centerLat = station.latitude;

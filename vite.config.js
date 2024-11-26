@@ -11,6 +11,7 @@ export default defineConfig({
         eqlist: resolve(__dirname, 'event_list.html'),
         stations: resolve(__dirname, 'station_list.html'),
         station: resolve(__dirname, 'station.html'),
+        stationrealtime: resolve(__dirname, 'station_realtime.html'),
         earthquake: resolve(__dirname, 'earthquake.html'),
         seismogram: resolve(__dirname, 'seismogram.html'),
       },
