@@ -35,9 +35,6 @@ export function createNetworkLegend(networkList: Array<sp.stationxml.Network>) {
   return div;
 }
 
-export function createBaseLegend(eqMap, position): HTMLDivElement {
-
-}
 export function createStandardLegend(mapEl) {
   console.log("Map on redraw")
   if (! mapEl.map) {

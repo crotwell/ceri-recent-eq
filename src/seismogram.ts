@@ -5,7 +5,7 @@ import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 
 
-const headEl = document.querySelector<HTMLHeaderElement>('header');
+const headEl = document.querySelector<HTMLElement>('header');
 headEl!.innerHTML = `
   <a href="http://www.memphis.edu/ceri">
     <img src="UofM_logo_preferred.png" alt"CERI" height="180">
