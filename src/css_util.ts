@@ -1,3 +1,4 @@
+import * as sp from 'seisplotjs';
 
 export const quakeTimeColorCSS = `
 path.quakeMapMarker {
@@ -42,7 +43,7 @@ export let knownNetworkCodes = [
   "NM","CO","ET","US","N4","OK","KY","O2","AG"
 ];
 
-export function createNetworkCSS(networkList: Array<Network>): String {
+export function createNetworkCSS(networkList: Array<sp.stationxml.Network>): String {
   let css = "";
   let idx = 0;
   for (const n of knownNetworkCodes) {

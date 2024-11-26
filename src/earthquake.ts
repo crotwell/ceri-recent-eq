@@ -61,38 +61,39 @@ const qid = queryParams.get("quakeid");
 if (qid == null) {
   // go back to main?
   window.open(`index.html`);
-}
-const pEl = document.querySelector("p");
-if (pEl != null) {pEl.textContent = qid;}
-loadQuakeById(qid).then(quake => {
-  if (quake == null) {
-    pEl.textContent = `Unable to load earthquake for id ${qid}`;
-  }
-  eqMap.centerLat = quake.origin.latitude;
-  eqMap.centerLon = quake.origin.longitude;
-  quakeTable.quakeList = [quake];
-  eqMap.addQuake(quake, "day");
-  eqMap.redraw();
-  return quake;
-}).then(quake => {
-  return loadStations().then(netList => {
-    eqMap.addStyle(createNetworkCSS(netList));
-    for (let net of netList ) {
-      eqMap.addStation(net.stations, net.networkCode);
+} else {
+  const pEl = document.querySelector("p");
+  if (pEl != null) {pEl.textContent = qid;}
+  loadQuakeById(qid).then(quake => {
+    if (quake == null) {
+      pEl.textContent = `Unable to load earthquake for id ${qid}`;
     }
+    eqMap.centerLat = quake.origin.latitude;
+    eqMap.centerLon = quake.origin.longitude;
+    quakeTable.quakeList = [quake];
+    eqMap.addQuake(quake, "day");
     eqMap.redraw();
-    return netList;
+    return quake;
+  }).then(quake => {
+    return loadStations().then(netList => {
+      eqMap.addStyle(createNetworkCSS(netList));
+      for (let net of netList ) {
+        eqMap.addStation(net.stations, net.networkCode);
+      }
+      eqMap.redraw();
+      return netList;
+    });
+  }).then(netList => {
+    console.log(`loaded ${netList.length} networks`);
   });
-}).then(netList => {
-  console.log(`loaded ${netList.length} networks`);
-});
 
-eqMap.onRedraw = function(eqMap) {
-  createStandardLegend(eqMap);
-  new AutoGraticule().addTo(eqMap.map);
-};
+  eqMap.onRedraw = function(eqMap) {
+    createStandardLegend(eqMap);
+    new AutoGraticule().addTo(eqMap.map);
+  };
 
-eqMap.addEventListener("stationclick", e => {
-  console.log(e.detail.station.sourceId);
-  window.open(`seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`, "seismogram");
-});
+  eqMap.addEventListener("stationclick", e => {
+    console.log(e.detail.station.sourceId);
+    window.open(`seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`, "seismogram");
+  });
+}
