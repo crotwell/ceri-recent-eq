@@ -58,6 +58,7 @@ loadStationBySID(sid).then(netList => {
   document.querySelector("#realtime").setAttribute("href",  `station_realtime.html?sid=${sid}`);
 
   station = netList[0].stations[0];
+  document.querySelector("span.toptext").textContent = `${sid} ${station.name}`;
   eqMap.addStation(station, station.networkCode);
   eqMap.centerLat = station.latitude;
   eqMap.centerLon = station.longitude;
