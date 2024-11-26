@@ -47,15 +47,9 @@ export function createStandardLegend(mapEl) {
 
   let networkList = new Array();
   if (mapEl.stationList) {
-    for (const s of mapEl.stationList) {
-      console.log(s.constructor.name)
-      console.log(s);
-      console.log(s.sourceId);
-//      console.log(s.network.networkCode)
-    }
     const out = new Set();
     for (const c of mapEl.stationList) {
-      if (c) {mapEl.stationList
+      if (c) {
         out.add(c.network)
       }
     }

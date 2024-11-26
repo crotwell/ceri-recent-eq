@@ -1,13 +1,12 @@
 import './style.css'
-import { loadStations, loadStationBySID } from './load_stations.ts'
-import { loadQuakeById, loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import { loadStations, } from './load_stations.ts'
+import { loadQuakeById } from './load_quakes.ts'
 import { createStandardLegend } from './legend';
 import * as sp from 'seisplotjs';
-import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
 
 
-const headEl = document.querySelector<HTMLHeaderElement>('header');
+const headEl = document.querySelector<HTMLElement>('header');
 headEl!.innerHTML = `
   <a href="http://www.memphis.edu/ceri">
     <img src="UofM_logo_preferred.png" alt"CERI" height="180">
@@ -22,9 +21,8 @@ headEl!.innerHTML = `
   </nav>
 `;
 
-const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
+//const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
 const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
-
 const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -48,7 +46,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-const eqMap = document.querySelector("sp-station-quake-map");
+const eqMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
 eqMap.addStyle(`
   div.legend {
     background-color: lightgrey;
@@ -115,8 +113,16 @@ const quakeTable = document.querySelector("sp-quake-table");
 const url = new URL(document.URL);
 const queryParams = url.searchParams;
 const qid = queryParams.get("quakeid");
-document.querySelector("p").textContent = qid;
+if (qid == null) {
+  // go back to main?
+  window.open(`index.html`);
+}
+const pEl = document.querySelector("p");
+if (pEl != null) {pEl.textContent = qid;}
 loadQuakeById(qid).then(quake => {
+  if (quake == null) {
+    pEl.textContent = `Unable to load earthquake for id ${qid}`;
+  }
   eqMap.centerLat = quake.origin.latitude;
   eqMap.centerLon = quake.origin.longitude;
   quakeTable.quakeList = [quake];
