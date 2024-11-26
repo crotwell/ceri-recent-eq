@@ -39,6 +39,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       fitBounds="false"
       >
     </sp-station-quake-map>
+    <sp-quake-table></sp-quake-table>
     <h5 class="read-the-docs">
       Created with <a href="http://crotwell.github.io/seisplotjs/">Seisplotjs</a>
     </h5>
@@ -49,6 +50,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 //const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
 
 const eqMap = document.querySelector("sp-station-quake-map");
+const eqTable = document.querySelector("sp-quake-table");
 eqMap.addStyle(`
   div.legend {
     background-color: lightgrey;
@@ -92,6 +94,7 @@ eqMap.onRedraw = function(eqMap) {
 
 createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
+  eqTable.quakeList = quakeList;
   eqMap.redraw();
 });
 
