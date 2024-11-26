@@ -1,5 +1,6 @@
 import './style.css'
-import { createStandardLegend} from './legend';
+import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
+import { createStandardLegend, legendCSS} from './legend';
 import { loadStations, loadStationBySID } from './load_stations.ts'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
 import * as sp from 'seisplotjs';
@@ -48,66 +49,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `
 
 const eqMap = document.querySelector("sp-station-quake-map");
-eqMap.addStyle(`
-  div.legend {
-    background-color: lightgrey;
-    border-color: red;
-    border-width: thick;
-    font-size: large;
-    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-  }
-  div.legend div div {
-    display: flex;
-    align-items: start;
-    justify-content: space-around;
-  }
-  div.NM.stationMapMarker {
-    color: red;
-  }
-  div.CO.stationMapMarker {
-    color: rebeccapurple;
-  }
-  div.ET.stationMapMarker {
-    color: orange;
-  }
-  div.US.stationMapMarker {
-    color: blue;
-  }
-  div.N4.stationMapMarker {
-    color: brown;
-  }
-  div.OK.stationMapMarker {
-    color: white;
-  }
-  div.KY.stationMapMarker {
-    color: cyan;
-  }
-  div.O2.stationMapMarker {
-    color: pink;
-  }
-  div.AG.stationMapMarker {
-    color: yellow;
-  }
-  path.quakeMapMarker {
-    fill: yellow;
-    stroke: yellow;
-    fill-opacity: 0.25;
-    stroke-opacity: 0.75
-  }
-  .quakeMapMarker.day {
-    fill: red;
-    stroke: red;
-  }
-  .quakeMapMarker.week {
-    fill: orange;
-    stroke: orange;
-  }
-  .quakeMapMarker.older {
-    fill: yellow;
-    stroke: yellow;
-  }
-`);
-
+eqMap.addStyle(legendCSS);
+eqMap.addStyle(quakeTimeColorCSS);
+eqMap.addStyle(createNetworkCSS([]));// empty network list just gets default colors
 
 
 const chanTable = document.querySelector("sp-channel-table");

@@ -1,5 +1,19 @@
 import * as sp from 'seisplotjs';
 
+export const legendCSS = `
+div.legend {
+  background-color: lightgrey;
+  border-color: red;
+  border-width: thick;
+  font-size: large;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+div.legend div div {
+  display: flex;
+  align-items: start;
+  justify-content: space-around;
+}
+`;
 
 export function createLegendCircle(cssClass, text) {
   const div = document.createElement("div");
@@ -28,8 +42,9 @@ export function createLegendTriangle(cssClass, text) {
 }
 
 export function createNetworkLegend(networkList: Array<sp.stationxml.Network>) {
+  const sortNetworkList = networkList.toSorted(sp.fdsnsourceid.SourceIdSorter);
   const div = document.createElement("div");
-  for (const n of networkList) {
+  for (const n of sortNetworkList) {
     div.appendChild(createLegendTriangle(n.networkCode, n.networkCode));
   }
   return div;

@@ -1,7 +1,8 @@
-import './style.css'
+import './style.css';
+import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import { loadStations, } from './load_stations.ts'
 import { loadQuakeById } from './load_quakes.ts'
-import { createStandardLegend } from './legend';
+import { createStandardLegend, legendCSS } from './legend';
 import * as sp from 'seisplotjs';
 import AutoGraticule from "leaflet-auto-graticule";
 
@@ -26,7 +27,7 @@ const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geolo
 const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{y}/{x}/'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<p>On station page: </p>
+<p>On event page: </p>
   <div id="timerange">
   </div>
   <div>
@@ -47,65 +48,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `
 
 const eqMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
-eqMap.addStyle(`
-  div.legend {
-    background-color: lightgrey;
-    border-color: red;
-    border-width: thick;
-    font-size: large;
-    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-  }
-  div.legend div div {
-    display: flex;
-    align-items: start;
-    justify-content: space-around;
-  }
-  div.NM.stationMapMarker {
-    color: red;
-  }
-  div.CO.stationMapMarker {
-    color: rebeccapurple;
-  }
-  div.ET.stationMapMarker {
-    color: orange;
-  }
-  div.US.stationMapMarker {
-    color: blue;
-  }
-  div.N4.stationMapMarker {
-    color: brown;
-  }
-  div.OK.stationMapMarker {
-    color: white;
-  }
-  div.KY.stationMapMarker {
-    color: cyan;
-  }
-  div.O2.stationMapMarker {
-    color: pink;
-  }
-  div.AG.stationMapMarker {
-    color: yellow;
-  }
-  path.quakeMapMarker {
-    fill: yellow;
-    stroke: yellow;
-    fill-opacity: 0.25;
-    stroke-opacity: 0.75
-  }
-  .quakeMapMarker.day {
-    fill: red;
-    stroke: red;
-  }
-  .quakeMapMarker.week {
-    fill: orange;
-    stroke: orange;
-  }
-  .quakeMapMarker.older {
-    fill: yellow;
-    stroke: yellow;
-  }
-`);
+eqMap.addStyle(legendCSS);
+eqMap.addStyle(quakeTimeColorCSS);
+eqMap.addStyle(createNetworkCSS([]));// empty network list just gets default colors
 
 
 const quakeTable = document.querySelector("sp-quake-table");
@@ -127,15 +72,19 @@ loadQuakeById(qid).then(quake => {
   eqMap.centerLon = quake.origin.longitude;
   quakeTable.quakeList = [quake];
   eqMap.addQuake(quake, "day");
-  eqMap.draw();
+  eqMap.redraw();
   return quake;
 }).then(quake => {
   return loadStations().then(netList => {
+    eqMap.addStyle(createNetworkCSS(netList));
     for (let net of netList ) {
       eqMap.addStation(net.stations, net.networkCode);
     }
     eqMap.redraw();
+    return netList;
   });
+}).then(netList => {
+  console.log(`loaded ${netList.length} networks`);
 });
 
 eqMap.onRedraw = function(eqMap) {

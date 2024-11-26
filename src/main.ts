@@ -1,8 +1,10 @@
 import './style.css'
+import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import {
   loadQuakes, createQuakeLoadRadios,
-  addQuakesToMap, filterQuakesOnMap } from './load_quakes.ts'
-import { createStandardLegend } from './legend';
+  addQuakesToMap, filterQuakesOnMap,
+} from './load_quakes.ts';
+import { createStandardLegend, legendCSS, } from './legend';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
@@ -53,41 +55,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const eqMap = document.querySelector("sp-station-quake-map");
 const eqTable = document.querySelector("sp-quake-table");
-eqMap.addStyle(`
-  div.legend {
-    background-color: lightgrey;
-    border-color: red;
-    border-width: thick;
-    font-size: large;
-    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-  }
-  div.legend div div {
-    display: flex;
-    align-items: start;
-    justify-content: space-around;
-  }
-  div.stationMapMarker {
-    color: rebeccapurple;
-  }
-  path.quakeMapMarker {
-    fill: yellow;
-    stroke: yellow;
-    fill-opacity: 0.25;
-    stroke-opacity: 0.75
-  }
-  .quakeMapMarker.day {
-    fill: red;
-    stroke: red;
-  }
-  .quakeMapMarker.week {
-    fill: orange;
-    stroke: orange;
-  }
-  .quakeMapMarker.older {
-    fill: yellow;
-    stroke: yellow;
-  }
-`);
+eqMap.addStyle(legendCSS);
+eqMap.addStyle(quakeTimeColorCSS);
 
 eqMap.onRedraw = function(eqMap) {
   createStandardLegend(eqMap);
