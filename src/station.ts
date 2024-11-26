@@ -1,4 +1,5 @@
 import './style.css'
+import { createStandardLegend} from './legend';
 import { loadStations, loadStationBySID } from './load_stations.ts'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
 import * as sp from 'seisplotjs';
@@ -48,6 +49,18 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
+  div.legend {
+    background-color: lightgrey;
+    border-color: red;
+    border-width: thick;
+    font-size: large;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  }
+  div.legend div div {
+    display: flex;
+    align-items: start;
+    justify-content: space-around;
+  }
   div.NM.stationMapMarker {
     color: red;
   }
@@ -96,6 +109,7 @@ eqMap.addStyle(`
 `);
 
 
+
 const chanTable = document.querySelector("sp-channel-table");
 
 const url = new URL(document.URL);
@@ -109,7 +123,8 @@ loadStationBySID(sid).then(netList => {
   eqMap.centerLat = station.latitude;
   eqMap.centerLon = station.longitude;
   chanTable.channelList = station.channels;
-  eqMap.draw();
+
+  eqMap.redraw();
   return station;
 }).then(station => {
   return station;
@@ -119,8 +134,13 @@ createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
 });
 
+eqMap.onRedraw = function(eqMap) {
+  createStandardLegend(eqMap);
+  new AutoGraticule().addTo(eqMap.map);
+};
 
 eqMap.addEventListener("quakeclick", e => {
   console.log(e.detail.quake.publicId);
   window.open(`seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`, "seismogram");
 });
+eqMap.redraw();

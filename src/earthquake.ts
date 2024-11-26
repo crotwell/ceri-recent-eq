@@ -49,6 +49,18 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
+  div.legend {
+    background-color: lightgrey;
+    border-color: red;
+    border-width: thick;
+    font-size: large;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  }
+  div.legend div div {
+    display: flex;
+    align-items: start;
+    justify-content: space-around;
+  }
   div.NM.stationMapMarker {
     color: red;
   }
@@ -115,10 +127,14 @@ loadQuakeById(qid).then(quake => {
     for (let net of netList ) {
       eqMap.addStation(net.stations, net.networkCode);
     }
-    new AutoGraticule().addTo(eqMap.map);
-    eqMap.draw();
+    eqMap.redraw();
   });
 });
+
+eqMap.onRedraw = function(eqMap) {
+  createStandardLegend(eqMap);
+  new AutoGraticule().addTo(eqMap.map);
+};
 
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);

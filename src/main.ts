@@ -1,5 +1,6 @@
 import './style.css'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import {createLegendCircle, createStandardLegend } from './legend';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
@@ -45,6 +46,18 @@ const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
+  div.legend {
+    background-color: lightgrey;
+    border-color: red;
+    border-width: thick;
+    font-size: large;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  }
+  div.legend div div {
+    display: flex;
+    align-items: start;
+    justify-content: space-around;
+  }
   div.stationMapMarker {
     color: rebeccapurple;
   }
@@ -68,12 +81,19 @@ eqMap.addStyle(`
   }
 `);
 
+eqMap.onRedraw = function(eqMap) {
+  createStandardLegend(eqMap);
+  new AutoGraticule().addTo(eqMap.map);
+}
+
 createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
-  new AutoGraticule().addTo(eqMap.map);
+  eqMap.redraw();
 });
 
 eqMap.addEventListener("quakeclick", e => {
   console.log(e.detail.quake.publicId);
   window.open(`earthquake?quakeid=${e.detail.quake.publicId}`, "earthquake");
 });
+
+eqMap.redraw();

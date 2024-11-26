@@ -17,6 +17,8 @@ export function loadStations() {
       return new DOMParser().parseFromString(rawXmlText, "text/xml");
   }).then(xml => {
     return sp.stationxml.parseStationXml(xml);
+  }).then(netList => {
+    return netList;
   });
 }
 

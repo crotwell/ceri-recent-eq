@@ -1,7 +1,9 @@
 import './style.css'
+import {createStandardLegend} from './legend';
 import { loadStations } from './load_stations.ts'
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
+import AutoGraticule from "leaflet-auto-graticule";
 
 
 const headEl = document.querySelector<HTMLHeaderElement>('header');
@@ -42,6 +44,18 @@ const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
 
 const eqMap = document.querySelector("sp-station-quake-map");
 eqMap.addStyle(`
+  div.legend {
+    background-color: lightgrey;
+    border-color: red;
+    border-width: thick;
+    font-size: large;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  }
+  div.legend div div {
+    display: flex;
+    align-items: start;
+    justify-content: space-around;
+  }
   div.NM.stationMapMarker {
     color: red;
   }
@@ -93,10 +107,16 @@ loadStations().then(netList => {
   for (let net of netList ) {
     eqMap.addStation(net.stations, net.networkCode);
   }
-  eqMap.draw();
+  eqMap.redraw();
 });
+
+eqMap.onRedraw = function(eqMap) {
+  createStandardLegend(eqMap);
+  new AutoGraticule().addTo(eqMap.map);
+};
 
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);
   window.open(`station?sid=${e.detail.station.sourceId}`, "station");
 });
+eqMap.redraw();

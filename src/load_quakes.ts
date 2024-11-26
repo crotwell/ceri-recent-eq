@@ -127,5 +127,5 @@ export function addQuakesToMap(quakeList: Array<sp.quakeml.Quake>,
     }
     eqMap.addQuake(q, css);
   }
-  eqMap.draw();
+  eqMap.redraw();
 }
