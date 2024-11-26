@@ -49,13 +49,13 @@ eqMap.addStyle(quakeTimeColorCSS);
 
 eqMap.onRedraw = function(eqMap) {
   createStandardLegend(eqMap);
-  new AutoGraticule().addTo(eqMap.map);
   eqMap.map.addEventListener("zoomend", e => {
     eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
   });
   eqMap.map.addEventListener("moveend", e => {
     eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
   });
+  //new AutoGraticule().addTo(eqMap.map);
 }
 
 createQuakeLoadRadios(quakeList => {
