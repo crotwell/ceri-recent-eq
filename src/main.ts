@@ -1,6 +1,6 @@
 import './style.css'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
-import {createLegendCircle, createStandardLegend } from './legend';
+import { createStandardLegend } from './legend';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";
