@@ -117,6 +117,24 @@ export function loadForRange() {
   });
 }
 
+export function filterQuakesOnMap(quakeList: Array<sp.quakeml.Quake>,
+  latlonBounds: leaflet.LatLngBounds): Array<sp.quakeml.Quake> {
+  const out = new Array();
+  const west = latlonBounds.getWest();
+  const east = latlonBounds.getEast();
+  const south = latlonBounds.getSouth();
+  const north = latlonBounds.getNorth();
+  for (const q of quakeList) {
+    if (q != null
+      && q.latitude >= south && q.latitude <= north
+      && q.longitude >= west && q.longitude <= east
+    ) {
+      out.push(q);
+    }
+  }
+  return out;
+}
+
 export function loadQuakeById(qid: String): sp.quakeml.Quake {
   return loadQuakes().then(quakeList => {
     return quakeList.find(q => q.publicId === qid);

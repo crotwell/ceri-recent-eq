@@ -1,5 +1,7 @@
 import './style.css'
-import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import {
+  loadQuakes, createQuakeLoadRadios,
+  addQuakesToMap, filterQuakesOnMap } from './load_quakes.ts'
 import { createStandardLegend } from './legend';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
@@ -90,11 +92,19 @@ eqMap.addStyle(`
 eqMap.onRedraw = function(eqMap) {
   createStandardLegend(eqMap);
   new AutoGraticule().addTo(eqMap.map);
+  eqMap.map.addEventListener("zoomend", e => {
+    eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
+  });
+  eqMap.map.addEventListener("moveend", e => {
+    eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
+  });
 }
 
 createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
-  eqTable.quakeList = quakeList;
+  if (eqMap.map != null) {
+    eqTable.quakeList = filterQuakesOnMap(quakeList, eqMap.map.getBounds());
+  }
   eqMap.redraw();
 });
 
