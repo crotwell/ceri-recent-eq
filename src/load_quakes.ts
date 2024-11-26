@@ -120,6 +120,7 @@ export function loadForRange() {
 export function filterQuakesOnMap(quakeList: Array<sp.quakeml.Quake>,
   latlonBounds: leaflet.LatLngBounds): Array<sp.quakeml.Quake> {
   const out = new Array();
+  if (latlonBounds == null) {return quakeList;}
   const west = latlonBounds.getWest();
   const east = latlonBounds.getEast();
   const south = latlonBounds.getSouth();
