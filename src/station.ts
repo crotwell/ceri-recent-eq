@@ -20,7 +20,8 @@ const uscTileCache = 'https://www.seis.sc.edu/tilecache/USGS_USImageryTopo/{z}/{
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
     <span class="toptext">On station page: </span>
-    <a id="realtime">realtime</a>
+    <a id="realtime">Realtime</a>
+    <span> Latency: </span><span class="latency">-</span><span> at IRIS</span>
   <div>
   <div id="timerange">
   </div>
@@ -89,4 +90,54 @@ eqMap.addEventListener("quakeclick", e => {
   window.location.href = `seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`;
 });
 eqMap.redraw();
+
+// set up periodic query for station latency at IRIS
+let ringConn = new sp.ringserverweb.RingserverConnection();
+function enableLatencyCheck() {
+  if (station != null) {
+    const pattern = `${station.network.networkCode}_${station.stationCode}`;
+    ringConn.pullStreams(pattern).then(streamStats => {
+      const stationStats =
+        sp.ringserverweb.stationsFromStreams(streamStats.streams);
+      if (stationStats.length !== 0) {
+        const diffText = latencyAsText(stationStats[0].end);
+        document.querySelectorAll(".latency").forEach( el => {
+          el.textContent = diffText;
+        });
+      }
+    });
+  }
+
+  setTimeout(()=> {
+    enableLatencyCheck();
+  }, 10*1000);
+}
+
+setTimeout(()=> {
+  enableLatencyCheck();
+}, 2*1000);
+
+
+export function latencyAsText( end: sp.luxon.DateTime ) {
+  let out = "missing";
+  if (end){
+    const latency = end.diffNow("seconds").negate();
+    if (latency.as('milliseconds') < 1000) {
+      out = "ok";
+    } else if (latency.as('seconds') < 10) {
+      out = "ok";
+    } else if (latency.as('seconds') < 150) {
+      out = `${Math.round(latency.as('seconds'))} sec`;
+    } else if (latency.as('minutes') < 150) {
+      out = `${Math.round(latency.as('minutes'))} min`;
+    } else if (latency.as('hours') < 48) {
+      out = `${Math.round(latency.as('hours'))} hr`;
+    } else {
+      out = `${Math.round(latency.as('days'))} days`;
+    }
+  }
+  return out;
+}
+
+
 setSPVersion();
