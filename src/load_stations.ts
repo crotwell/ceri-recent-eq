@@ -1,5 +1,7 @@
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
+import { eq_state } from "./state";
+
 
 export function loadStations() {
   const ceri_recenteq_url =
@@ -18,6 +20,7 @@ export function loadStations() {
   }).then(xml => {
     return sp.stationxml.parseStationXml(xml);
   }).then(netList => {
+    eq_state.networkList = netList;
     return netList;
   });
 }

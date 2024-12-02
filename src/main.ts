@@ -6,6 +6,8 @@ import {
 } from './load_quakes.ts';
 import { createStandardLegend, legendCSS, } from './legend';
 import {createHeader, setSPVersion} from './navigation';
+import { eq_state } from "./state";
+
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
 import AutoGraticule from "leaflet-auto-graticule";

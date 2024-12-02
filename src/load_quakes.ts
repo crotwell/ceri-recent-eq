@@ -1,5 +1,6 @@
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
+import { eq_state } from "./state";
 
 export function loadCeriBoundary() {
   const ceriBound_url = 'ceri_boundaries_req3.geojson';
@@ -30,6 +31,9 @@ export function loadQuakes() {
     }
   }).then(json => {
     return parseCeriJson(json);
+  }).then(quakeList => {
+    eq_state.quakeList = quakeList;
+    return quakeList;
   });
 }
 
