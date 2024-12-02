@@ -49,7 +49,7 @@ const queryParams = url.searchParams;
 const qid = queryParams.get("quakeid");
 if (qid == null) {
   // go back to main?
-  window.open(`index.html`);
+  window.location.href = `index.html`;
 } else {
   const pEl = document.querySelector("p");
   if (pEl != null) {pEl.textContent = qid;}
@@ -83,7 +83,7 @@ if (qid == null) {
 
   eqMap.addEventListener("stationclick", e => {
     console.log(e.detail.station.sourceId);
-    window.open(`seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`, "seismogram");
+    window.location.href = `seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`;
   });
 }
 setSPVersion();

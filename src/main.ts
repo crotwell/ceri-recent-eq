@@ -68,12 +68,12 @@ createQuakeLoadRadios(quakeList => {
 
 eqMap.addEventListener("quakeclick", e => {
   console.log(e.detail.quake.publicId);
-  window.open(`earthquake?quakeid=${e.detail.quake.publicId}`);
+  window.location.href = `earthquake?quakeid=${e.detail.quake.publicId}`;
 });
 
 eqTable.addEventListener("quakeclick", e => {
   console.log(e.detail.quake.publicId);
-  window.open(`earthquake?quakeid=${e.detail.quake.publicId}`);
+  window.location.href = `earthquake?quakeid=${e.detail.quake.publicId}`;
 });
 eqMap.redraw();
 setSPVersion();

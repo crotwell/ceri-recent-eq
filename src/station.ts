@@ -81,7 +81,7 @@ eqMap.onRedraw = function(eqMap) {
 
 eqMap.addEventListener("quakeclick", e => {
   console.log(e.detail.quake.publicId);
-  window.open(`seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`);
+  window.location.href = `seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`;
 });
 eqMap.redraw();
 setSPVersion();
