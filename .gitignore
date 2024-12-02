@@ -1,3 +1,7 @@
+# ignore data loaded into public/data
+public/data/recent_events.json
+public/data/stations.staxml
+
 # Logs
 logs
 *.log
