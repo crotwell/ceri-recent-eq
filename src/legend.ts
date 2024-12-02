@@ -42,18 +42,23 @@ export function createLegendTriangle(cssClass, text) {
 }
 
 export function createNetworkLegend(networkList: Array<sp.stationxml.Network>) {
-  const sortNetworkList = networkList.toSorted(sp.fdsnsourceid.SourceIdSorter);
   const div = document.createElement("div");
-  for (const n of sortNetworkList) {
-    div.appendChild(createLegendTriangle(n.networkCode, n.networkCode));
+  if (networkList.length > 0) {
+    const sortNetworkList = networkList.toSorted(sp.fdsnsourceid.SourceIdSorter);
+    const title = document.createElement("div");
+    title.textContent = "Networks";
+    div.appendChild(title);
+    for (const n of sortNetworkList) {
+      div.appendChild(createLegendTriangle(n.networkCode, n.networkCode));
+    }
   }
   return div;
 }
 
 export function createStandardLegend(mapEl) {
-  console.log("Map on redraw")
   if (! mapEl.map) {
-    console.log("map null inside mapEl")
+    console.log("map null inside mapEl");
+    return;
   }
   const oldLegend = mapEl.querySelector("div.legend");
   if (oldLegend) {
@@ -78,7 +83,7 @@ export function createStandardLegend(mapEl) {
     console.log("onAdd called")
     const div = L.DomUtil.create('div', 'info legend');
     const title = document.createElement("div");
-    title.textContent = "Legend";
+    title.textContent = "EQ Age";
     div.appendChild(title);
     const subdiv = document.createElement("div");
     subdiv.appendChild(createLegendCircle("day", "Day"));
