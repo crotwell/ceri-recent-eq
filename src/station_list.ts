@@ -4,6 +4,11 @@ import {createStandardLegend, legendCSS} from './legend';
 import {
   loadCeriBoundary, addBoundaryToMap,
 } from './load_quakes.ts';
+
+import {
+  setUpEQMapAndTable,
+  defaultHandleQuakeClick, defaultHandleStationClick
+} from './eqmap';
 import { loadStations } from './load_stations.ts'
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
@@ -30,14 +35,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
-const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
-
-const uscTileCache = 'https://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}/'
-
 const eqMap = document.querySelector("sp-station-quake-map");
-eqMap.addStyle(legendCSS);
-eqMap.addStyle(quakeTimeColorCSS);
+setUpEQMapAndTable(eqMap, null);
 
 loadStations().then(netList => {
   eqMap.addStyle(createNetworkCSS(netList));
@@ -47,17 +46,9 @@ loadStations().then(netList => {
   eqMap.redraw();
 });
 
-eqMap.onRedraw = function(eqMap) {
-  createStandardLegend(eqMap);
-  loadCeriBoundary().then( boundary => {
-    addBoundaryToMap(boundary, eqMap);
-  });
-  new AutoGraticule().addTo(eqMap.map);
-};
-
+eqmap.removeEventListener("stationclick", defaultHandleStationClick);
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);
   window.location.href = `station?sid=${e.detail.station.sourceId}`;
 });
-eqMap.redraw();
 setSPVersion();

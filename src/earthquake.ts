@@ -3,6 +3,10 @@ import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import { loadStations, } from './load_stations.ts'
 import { loadQuakeById, loadCeriBoundary, addBoundaryToMap, } from './load_quakes.ts'
 import { createStandardLegend, legendCSS } from './legend';
+import {
+  setUpEQMapAndTable,
+  defaultHandleQuakeClick, defaultHandleStationClick
+} from './eqmap';
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import AutoGraticule from "leaflet-auto-graticule";
@@ -37,12 +41,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `
 
 const eqMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
-eqMap.addStyle(legendCSS);
-eqMap.addStyle(quakeTimeColorCSS);
-eqMap.addStyle(createNetworkCSS([]));// empty network list just gets default colors
-
-
 const quakeTable = document.querySelector("sp-quake-table");
+setUpEQMapAndTable(eqMap, quakeTable);
 
 const url = new URL(document.URL);
 const queryParams = url.searchParams;
@@ -76,14 +76,7 @@ if (qid == null) {
     console.log(`loaded ${netList.length} networks`);
   });
 
-  eqMap.onRedraw = function(eqMap) {
-    createStandardLegend(eqMap);
-    loadCeriBoundary().then( boundary => {
-      addBoundaryToMap(boundary, eqMap);
-    });
-    new AutoGraticule().addTo(eqMap.map);
-  };
-
+  eqMap.removeEventListener("stationclick", defaultHandleStationClick);
   eqMap.addEventListener("stationclick", e => {
     console.log(e.detail.station.sourceId);
     window.location.href = `seismogram?sid=${e.detail.station.sourceId}&quakeid=${qid}`;

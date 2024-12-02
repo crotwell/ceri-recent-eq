@@ -5,6 +5,7 @@ import {
   addQuakesToMap, filterQuakesOnMap,
   loadCeriBoundary, addBoundaryToMap,
 } from './load_quakes.ts';
+import {setUpEQMapAndTable} from './eqmap';
 import { createStandardLegend, legendCSS, } from './legend';
 import {createHeader, setSPVersion} from './navigation';
 import { eq_state } from "./state";
@@ -47,22 +48,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const eqMap = document.querySelector("sp-station-quake-map");
 const eqTable = document.querySelector("sp-quake-table");
-eqMap.addStyle(legendCSS);
-eqMap.addStyle(quakeTimeColorCSS);
-
-eqMap.onRedraw = function(eqMap) {
-  createStandardLegend(eqMap);
-  eqMap.map.addEventListener("zoomend", e => {
-    eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
-  });
-  eqMap.map.addEventListener("moveend", e => {
-    eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
-  });
-  //new AutoGraticule().addTo(eqMap.map);
-  loadCeriBoundary().then( boundary => {
-    addBoundaryToMap(boundary, eqMap);
-  });
-}
+setUpEQMapAndTable(eqMap, eqTable);
 
 createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
@@ -72,14 +58,5 @@ createQuakeLoadRadios(quakeList => {
   eqMap.redraw();
 });
 
-eqMap.addEventListener("quakeclick", e => {
-  console.log(e.detail.quake.publicId);
-  window.location.href = `earthquake?quakeid=${e.detail.quake.publicId}`;
-});
 
-eqTable.addEventListener("quakeclick", e => {
-  console.log(e.detail.quake.publicId);
-  window.location.href = `earthquake?quakeid=${e.detail.quake.publicId}`;
-});
-eqMap.redraw();
 setSPVersion();

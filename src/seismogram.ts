@@ -60,4 +60,14 @@ loadStationBySID(sid).then(netList => {
   orgDisp.seisData = dataset.waveforms;
   return dataset;
 });
+const orgDisp = document.querySelector("sp-organized-display");
+orgDisp.addEventListener("quakeclick", e => {
+  console.log(e.detail.quake.publicId);
+  window.location.href = `earthquake?quakeid=${e.detail.quake.publicId}`;
+});
+orgDisp.addEventListener("stationclick", e => {
+  console.log(`seis stationclick: ${e.detail.station.sourceId}`);
+  window.location.href = `station?sid=${e.detail.station.sourceId}`;
+});
+
 setSPVersion();
