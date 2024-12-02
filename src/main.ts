@@ -3,6 +3,7 @@ import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import {
   loadQuakes, createQuakeLoadRadios,
   addQuakesToMap, filterQuakesOnMap,
+  loadCeriBoundary, addBoundaryToMap,
 } from './load_quakes.ts';
 import { createStandardLegend, legendCSS, } from './legend';
 import {createHeader, setSPVersion} from './navigation';
@@ -58,6 +59,9 @@ eqMap.onRedraw = function(eqMap) {
     eqTable.quakeList = filterQuakesOnMap(eqMap.quakeList, eqMap.map.getBounds());
   });
   //new AutoGraticule().addTo(eqMap.map);
+  loadCeriBoundary().then( boundary => {
+    addBoundaryToMap(boundary, eqMap);
+  });
 }
 
 createQuakeLoadRadios(quakeList => {

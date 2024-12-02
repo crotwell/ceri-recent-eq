@@ -1,20 +1,32 @@
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
+import * as L from 'leaflet';
 import { eq_state } from "./state";
 
 export function loadCeriBoundary() {
-  const ceriBound_url = 'ceri_boundaries_req3.geojson';
+  const ceriBound_url = 'data/ceri_boundaries_req3.geojson';
 
   const fetchInit = sp.util.defaultFetchInitObj(sp.util.JSON_MIME);
-  return sp.util.doFetchWithTimeout(test_recenteq_url, fetchInit, 10).then(response => {
+  return sp.util.doFetchWithTimeout(ceriBound_url, fetchInit, 10).then(response => {
     if (response.status === 200) {
       return response.json();
     } else {
       throw new Error(`Status not successful: ${response.status}`);
     }
   }).then(geojson => {
+    eq_state.boundary = geojson;
     return geojson;
   });
+}
+
+export function addBoundaryToMap(geoJsonBoundary,
+                                eqMap: sp.leafletutil.QuakeStationMap) {
+  if (eqMap.map != null) {
+    L.geoJSON(geoJsonBoundary).addTo(eqMap.map);
+    console.log("added boundary to map");
+  } else {
+    console.log("can't add boundary, map is null");
+  }
 }
 
 export function loadQuakes() {

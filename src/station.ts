@@ -2,7 +2,9 @@ import './style.css'
 import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import { createStandardLegend, legendCSS} from './legend';
 import { loadStations, loadStationBySID } from './load_stations.ts'
-import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes.ts'
+import { loadQuakes, createQuakeLoadRadios, addQuakesToMap,
+  loadCeriBoundary, addBoundaryToMap,
+} from './load_quakes.ts'
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
@@ -76,6 +78,9 @@ createQuakeLoadRadios(quakeList => {
 
 eqMap.onRedraw = function(eqMap) {
   createStandardLegend(eqMap);
+  loadCeriBoundary().then( boundary => {
+    addBoundaryToMap(boundary, eqMap);
+  });
   new AutoGraticule().addTo(eqMap.map);
 };
 

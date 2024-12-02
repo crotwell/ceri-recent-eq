@@ -1,7 +1,7 @@
 import './style.css';
 import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
 import { loadStations, } from './load_stations.ts'
-import { loadQuakeById } from './load_quakes.ts'
+import { loadQuakeById, loadCeriBoundary, addBoundaryToMap, } from './load_quakes.ts'
 import { createStandardLegend, legendCSS } from './legend';
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
@@ -78,6 +78,9 @@ if (qid == null) {
 
   eqMap.onRedraw = function(eqMap) {
     createStandardLegend(eqMap);
+    loadCeriBoundary().then( boundary => {
+      addBoundaryToMap(boundary, eqMap);
+    });
     new AutoGraticule().addTo(eqMap.map);
   };
 
