@@ -30,9 +30,7 @@ export function addBoundaryToMap(geoJsonBoundary,
     const fList = [westArea, eastArea];
     for (const f of fList) {
       const latlon = [];
-
       for (const ll of f.geometry.coordinates[0]) {
-        console.log(ll)
         latlon.push([ll[1], ll[0]]);
       }
       let polygon = L.polygon(latlon, {color: colors[idx], fill: false}).addTo(eqMap.map);
