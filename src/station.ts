@@ -1,5 +1,6 @@
 import './style.css'
 import {quakeTimeColorCSS, createNetworkCSS} from './css_util';
+import {setUpEQMapAndTable, defaultHandleQuakeClick} from './eqmap';
 import { createStandardLegend, legendCSS} from './legend';
 import { loadStations, loadStationBySID } from './load_stations.ts'
 import { loadQuakes, createQuakeLoadRadios, addQuakesToMap,
@@ -8,7 +9,6 @@ import { loadQuakes, createQuakeLoadRadios, addQuakesToMap,
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-import AutoGraticule from "leaflet-auto-graticule";
 
 const headEl = createHeader();
 
@@ -44,18 +44,21 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-const eqMap = document.querySelector("sp-station-quake-map");
-eqMap.addStyle(legendCSS);
-eqMap.addStyle(quakeTimeColorCSS);
-eqMap.addStyle(createNetworkCSS([]));// empty network list just gets default colors
-
-
 const chanTable = document.querySelector("sp-channel-table");
 
 const url = new URL(document.URL);
 const queryParams = url.searchParams;
 const sid = queryParams.get("sid");
 let station = null;
+
+const eqMap = document.querySelector("sp-station-quake-map");
+setUpEQMapAndTable(eqMap, null);
+eqMap.removeEventListener("quakeclick", defaultHandleQuakeClick);
+eqMap.addEventListener("quakeclick", e => {
+  console.log(e.detail.quake.publicId);
+  window.location.href = `seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`;
+});
+
 document.querySelector("span.toptext").textContent = sid;
 loadStationBySID(sid).then(netList => {
   document.querySelector("#realtime").setAttribute("href",  `station_realtime.html?sid=${sid}`);
@@ -77,19 +80,6 @@ createQuakeLoadRadios(quakeList => {
   addQuakesToMap(quakeList, eqMap);
 });
 
-eqMap.onRedraw = function(eqMap) {
-  createStandardLegend(eqMap);
-  loadCeriBoundary().then( boundary => {
-    addBoundaryToMap(boundary, eqMap);
-  });
-  new AutoGraticule().addTo(eqMap.map);
-};
-
-eqMap.addEventListener("quakeclick", e => {
-  console.log(e.detail.quake.publicId);
-  window.location.href = `seismogram?sid=${station.sourceId}&quakeid=${e.detail.quake.publicId}`;
-});
-eqMap.redraw();
 
 // set up periodic query for station latency at IRIS
 let ringConn = new sp.ringserverweb.RingserverConnection();

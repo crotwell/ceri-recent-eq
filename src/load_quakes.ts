@@ -22,10 +22,24 @@ export function loadCeriBoundary() {
 export function addBoundaryToMap(geoJsonBoundary,
                                 eqMap: sp.leafletutil.QuakeStationMap) {
   if (eqMap.map != null) {
-    L.geoJSON(geoJsonBoundary).addTo(eqMap.map);
-    console.log("added boundary to map");
-  } else {
-    console.log("can't add boundary, map is null");
+    const colors = [ "green", "blue"]
+    let idx = 0;
+    const bigBox = geoJsonBoundary.features[0];
+    const westArea = geoJsonBoundary.features[1];
+    const eastArea = geoJsonBoundary.features[2];
+    const fList = [westArea, eastArea];
+    for (const f of fList) {
+      const latlon = [];
+
+      for (const ll of f.geometry.coordinates[0]) {
+        console.log(ll)
+        latlon.push([ll[1], ll[0]]);
+      }
+      let polygon = L.polygon(latlon, {color: colors[idx], fill: false}).addTo(eqMap.map);
+      idx +=1;
+    }
+    // some issue with leaflet and the geojson causes errors, so add manually
+    //L.geoJSON(geoJsonBoundary).addTo(eqMap.map);
   }
 }
 

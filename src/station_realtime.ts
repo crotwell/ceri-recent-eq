@@ -6,7 +6,6 @@ import { loadQuakes, createQuakeLoadRadios, addQuakesToMap } from './load_quakes
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-import AutoGraticule from "leaflet-auto-graticule";
 
 const headEl = createHeader();
 

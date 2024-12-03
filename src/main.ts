@@ -12,7 +12,6 @@ import { eq_state } from "./state";
 
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-import AutoGraticule from "leaflet-auto-graticule";
 
 const headEl = createHeader();
 const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';

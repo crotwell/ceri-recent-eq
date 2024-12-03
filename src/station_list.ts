@@ -13,7 +13,6 @@ import { loadStations } from './load_stations.ts'
 import {createHeader, setSPVersion} from './navigation';
 import * as sp from 'seisplotjs';
 import { DateTime, Duration, Interval } from "luxon";
-import AutoGraticule from "leaflet-auto-graticule";
 
 
 const headEl = createHeader();
@@ -46,7 +45,7 @@ loadStations().then(netList => {
   eqMap.redraw();
 });
 
-eqmap.removeEventListener("stationclick", defaultHandleStationClick);
+eqMap.removeEventListener("stationclick", defaultHandleStationClick);
 eqMap.addEventListener("stationclick", e => {
   console.log(e.detail.station.sourceId);
   window.location.href = `station?sid=${e.detail.station.sourceId}`;
