@@ -87,14 +87,20 @@ function enableLatencyCheck() {
   if (station != null) {
     const pattern = `${station.network.networkCode}_${station.stationCode}`;
     ringConn.pullStreams(pattern).then(streamStats => {
-      const stationStats =
-        sp.ringserverweb.stationsFromStreams(streamStats.streams);
-      if (stationStats.length !== 0) {
-        const diffText = latencyAsText(stationStats[0].end);
-        document.querySelectorAll(".latency").forEach( el => {
-          el.textContent = diffText;
-        });
+      let diffText = "missing";
+      if (streamStats.streams.length !== 0) {
+        const stationStats =
+          sp.ringserverweb.stationsFromStreams(streamStats.streams);
+        diffText = latencyAsText(stationStats[0].end);
       }
+      document.querySelectorAll(".latency").forEach( el => {
+        el.textContent = diffText;
+      });
+    }).catch( e => {
+
+      document.querySelectorAll(".latency").forEach( el => {
+        el.textContent = "err";
+      });
     });
   }
 
